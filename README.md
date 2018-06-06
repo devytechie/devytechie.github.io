@@ -1,2 +1,2 @@
 # Nzaba.github.io
-Personal websitr
+Personal website
