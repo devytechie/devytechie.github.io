@@ -1,7 +1,4 @@
 # Site settings
-url: https://raymondnzaba.com
-enforce_ssl: raymondnzaba.com
-
 title: Nzaba
 description: Ray of sunshine.
 # baseurl: "/particle" # the subpath of your site, e.g. /blog
