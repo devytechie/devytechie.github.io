@@ -13,7 +13,7 @@ top: -45px;}span {
 .line-1{
     position: relative;
     top: 50%;  
-    width: 24em;
+    width: 20em;
     margin: 0 auto;
     border-right: 2px solid rgba(255,255,255,.75);
     font-size: 450%;
@@ -21,7 +21,7 @@ top: -45px;}span {
     white-space: nowrap;
     overflow: hidden; 
     transform: translateY(-50%); 
-    bottom: -65px
+    bottom: -65px;
 }
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
