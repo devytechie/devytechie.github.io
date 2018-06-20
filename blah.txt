@@ -1,0 +1,290 @@
+#ui.R
+library(shiny)
+library(plotly)
+library(leaflet)
+library(dplyr)
+library(shinythemes)
+
+navbarPage(title = "The Opioid Crisis in America", id = "inTabset", collapsible = TRUE,  fluid = TRUE,theme = shinytheme("yeti"),
+           
+           
+           tabPanel(
+             title = "Stratification across age, race & gender", 
+             value = "tab1",
+             sidebarLayout(position = "right",sidebarPanel(h3("Show trends across:"),
+                          width = 3, 
+                          selectInput(inputId = "select",
+                                      label = "Select",
+                                      choices = c("age","race","gender"
+                                      ),selected = "age")
+             ),mainPanel(tags$h1("Deaths"),
+                         plotlyOutput(outputId = "plot1"),br(),br(),br(),
+                         div(style="display:inline-block;width:100%;margin-left: 500px;",actionButton(inputId = "toTab2_1", label = "Next"))))
+           ),
+           
+           tabPanel(
+             title = "Worst hit areas",
+             value = "tab3",
+             sidebarLayout(position = "right", sidebarPanel(h3("Another 1"),
+                                                            width=3,
+                                                            sliderInput(inputId = "numObs1", label = "Number of Counties to Plot:", min = 5, max = 3000, value = 1000, width = "850px"),
+                                                            selectInput(inputId = "deathChoice",
+                                                                        label = "Choose type of death:",
+                                                                        choices = c("Unintentional" = "Drug poisonings (overdose) Unintentional (X40-X44)",
+                                                                                    "Other" = "All other drug-induced causes",
+                                                                                    "Suicide" = "Drug poisonings (overdose) Suicide (X60-X64)",
+                                                                                    "Undetermined" = "Drug poisonings (overdose) Undetermined (Y10-Y14)")),
+                                                            sliderInput(inputId = "yearChoice", label = "Choose Year to Plot:", min = 1999, max = 2016, value = 1999, width = "500px", animate = TRUE, sep = "")
+             ),mainPanel(tags$h1("Map of Top Counties Affected By Crisis"),
+                         leafletOutput(outputId = "plot3", width = "100%", height = "450px"),
+                         div(style="display:inline-block;width:100%;margin-left: 1100px;",actionButton(inputId = "new1", label = "Next")),
+                         tags$h1("Table of Top Counties Arranged By Total Deaths"),
+                         dataTableOutput(outputId = "table1")))
+           ),
+           
+           tabPanel(
+             title = "Trends by state", 
+             value = "tab4",
+             sidebarLayout(position = "right",
+                           sidebarPanel(h3("Breakdown by state:"),
+                                        width = 3, 
+                                        selectInput(inputId = "Select State",
+                                                    label = "Select State",
+                                                    choices = c("Alabama",
+                                                                "Alaska",
+                                                                "Arizona",
+                                                                "Arkansas",
+                                                                "California",
+                                                                "Colorado",
+                                                                "Connecticut",
+                                                                "Delaware",
+                                                                "Florida",
+                                                                "Georgia",
+                                                                "Hawaii",
+                                                                "Idaho",
+                                                                "Illinois",
+                                                                "Indiana",
+                                                                "Iowa",
+                                                                "Kansas",
+                                                                "Kentucky",
+                                                                "Louisiana",
+                                                                "Maine",
+                                                                "Maryland",
+                                                                "Massachusetts",
+                                                                "Michigan",
+                                                                "Minnesota",
+                                                                "Mississippi",
+                                                                "Missouri",
+                                                                "Montana",
+                                                                "Nebraska",
+                                                                "Nevada",
+                                                                "New Hampshire",
+                                                                "New Jersey",
+                                                                "New Mexico",
+                                                                "New York",
+                                                                "North Carolina",
+                                                                "North Dakota",
+                                                                "Ohio",
+                                                                "Oklahoma",
+                                                                "Oregon",
+                                                                "Pennsylvania",
+                                                                "Rhode Island",
+                                                                "South Carolina",
+                                                                "South Dakota",
+                                                                "Tennessee",
+                                                                "Texas",
+                                                                "Utah",
+                                                                "Vermont",
+                                                                "Virginia",
+                                                                "Washington",
+                                                                "West Virginia",
+                                                                "Wisconsin",
+                                                                "Wyoming"))
+                           ),
+                           
+                           mainPanel(
+                             tags$h1("Crude death rates over time"),
+                             plotlyOutput(outputId = "deathrates"
+                             ),br(),br(),br(),div(style="display:inline-block;width:100%;margin-left: 500px;",actionButton(inputId = "toTab5_1", label = "Next"))
+                           )))
+)
+
+
+
+=====
+
+
+# 
+# 
+# 
+#server.R
+library(shiny)
+library(plotly)
+library(leaflet)
+library(dplyr)
+
+load("all.RData", envir = .GlobalEnv)
+load("PS.RData", envir = .GlobalEnv)
+
+function(input, output, session){
+  
+  observeEvent({input$toTab1_0+input$toTab1_1}, {
+    updateTabsetPanel(session, "inTabset",
+                      selected = "tab1")
+  })
+  
+  output$plot1 <- renderPlotly({
+    if(input$select=="age"){
+      ageGroupsData %>%
+        group_by(ageGroups, Year) %>%
+        filter(drugAlcoholInducedCause == "Drug poisonings (overdose) Unintentional (X40-X44)"|
+                 drugAlcoholInducedCause == "All other drug-induced causes"|
+                 drugAlcoholInducedCause == "Drug poisonings (overdose) Suicide (X60-X64)"|
+                 drugAlcoholInducedCause == "Drug poisonings (overdose) Undetermined (Y10-Y14)") %>%
+        summarize(numObs = n(), TotalDeaths = sum(Deaths)) %>%
+        plot_ly(x = ~Year, y = ~TotalDeaths, type = 'scatter', color = ~ageGroups, mode = "lines+markers")}
+    else if(input$select=="race"){
+      raceData %>%
+        group_by(race, Year) %>%
+        filter(drugAlcoholInducedCause == "Drug poisonings (overdose) Unintentional (X40-X44)"|
+                 drugAlcoholInducedCause == "All other drug-induced causes"|
+                 drugAlcoholInducedCause == "Drug poisonings (overdose) Suicide (X60-X64)"|
+                 drugAlcoholInducedCause == "Drug poisonings (overdose) Undetermined (Y10-Y14)") %>%
+        summarize(numObs = n(), TotalDeaths = sum(Deaths)) %>%
+        plot_ly(x = ~Year, y = ~TotalDeaths, type = 'scatter', color = ~race, mode = "lines+markers")}
+    
+    else{
+      ggplotly(genderData %>%
+                 group_by(gender, Year) %>%
+                 filter(drugAlcoholInducedCause == "Drug poisonings (overdose) Unintentional (X40-X44)"|
+                          drugAlcoholInducedCause == "All other drug-induced causes"|
+                          drugAlcoholInducedCause == "Drug poisonings (overdose) Suicide (X60-X64)"|
+                          drugAlcoholInducedCause == "Drug poisonings (overdose) Undetermined (Y10-Y14)") %>%
+                 summarize(numObs = n(), TotalDeaths = sum(Deaths)) %>%
+                 plot_ly(x = ~Year, y = ~TotalDeaths, type = 'scatter', color = ~gender, mode = "lines+markers"))}
+  })
+  
+  observeEvent(input$toTab2, {
+    updateTabsetPanel(session, "titleHead",
+                      selected = "tab2")
+  })
+  
+  output$plot2_1 <- renderPlotly({
+    ageGroupsData %>%
+      filter(ageGroups != "NS", Year == input$yearChoice_1, drugAlcoholInducedCause == input$input1_1) %>%
+      group_by(Year, ageGroups) %>%
+      summarize(numObs = n(), TotalDeaths = sum(Deaths)) %>%
+      plot_ly(x = ~ageGroups, y = ~TotalDeaths, type = "bar", color = ~ageGroups)
+  })
+  
+  output$plot2_2 <- renderPlotly({
+    raceData %>%
+      filter(Year == input$yearChoice_2, drugAlcoholInducedCause == input$input1_2) %>%
+      group_by(Year, race) %>%
+      summarize(numObs = n(), TotalDeaths = sum(Deaths)) %>%
+      plot_ly(x = ~race, y = ~TotalDeaths, type = "bar", color = ~race) 
+  })
+  
+  
+  output$plot2_3 <- renderPlotly({
+    genderData %>%
+      filter(Year == input$yearChoice_3, drugAlcoholInducedCause == input$input1_3) %>%
+      group_by(Year, gender) %>%
+      summarize(numObs = n(), TotalDeaths = sum(Deaths)) %>%
+      plot_ly(x = ~gender, y = ~TotalDeaths, type = "bar", color = ~gender) 
+  })
+  
+  output$plot3 <- renderLeaflet({
+    myTemp <- ageGroupsData %>%
+      group_by(County) %>%
+      filter(Year == input$yearChoice, drugAlcoholInducedCause == input$deathChoice) %>%
+      summarize(`Total Death Number` = sum(Deaths), Longitude = mean(longitude), Latitude = mean(latitude)) %>%
+      arrange(desc(`Total Death Number`)) %>%
+      head(input$numObs1)
+    
+    leaflet(myTemp) %>%
+      addTiles() %>%
+      addCircles(lng = ~`Longitude`, lat = ~`Latitude`, radius = ~`Total Death Number`*20) %>%
+      setView(lng = -99.48, lat = 39.7, zoom = 5)
+  })
+  
+  output$table1 <- renderDataTable({
+    ageGroupsData %>%
+      group_by(County) %>%
+      filter(Year == input$yearChoice, drugAlcoholInducedCause == input$deathChoice) %>%
+      summarize(`Total Death Number` = sum(Deaths), `Longitude` = mean(longitude), `Latitude` = mean(latitude)) %>%
+      arrange(desc(`Total Death Number`)) 
+  })
+  
+  output$deathrates <- renderPlotly({
+    ggplotly(PState_wrangled %>% 
+               filter(State==input$`Select State`) %>% 
+               ggplot(.,aes(x=Year,y=Crude_Death_Rate,color=Sex))+geom_line()+facet_wrap(~Race) + 
+               ylab("Crude death rate in %"))
+  })
+  
+  
+  output$brkdn <- renderPlotly({
+    ggplotly(br_down %>%
+               filter(Sex==input$Sex,Age_Group==input$Age) %>% 
+               ggplot(.,aes(x=Year,y=Crude_Death_Rate))+geom_line()+facet_wrap(~Race) +
+               ylab("Crude death rate in %")) 
+  })
+  
+  output$Aftermath <- renderImage({
+    outfile <- tempfile(fileext = '.png')
+    png(outfile, width = 1000, height = 700)
+  })
+  
+  observeEvent({input$beginning1+input$beginning2+input$beginning3+input$beginning4+input$beginning5+input$beginning6+input$beginning7+input$beginning3.5}, {
+    updateTabsetPanel(session, "inTabset",
+                      selected = "tab0")
+  })
+  
+  observeEvent({input$toTab2_1+input$toTab2_2}, {
+    updateTabsetPanel(session, "inTabset",
+                      selected = "tab2")
+  })
+  
+  observeEvent({input$toTab3_1+input$toTab3_2}, {
+    updateTabsetPanel(session, "inTabset",
+                      selected = "tab3")
+  })
+  
+  observeEvent({input$toTab3.5_1+input$toTab3.5_2}, {
+    updateTabsetPanel(session, "inTabset", 
+                      selected = "tab3.5")
+  })
+  
+  
+  observeEvent({input$toTab4_1+input$toTab4_2}, {
+    updateTabsetPanel(session, "inTabset",
+                      selected = "tab4")
+  })
+  
+  observeEvent({input$toTab5_1+input$toTab5_2}, {
+    updateTabsetPanel(session, "inTabset",
+                      selected = "tab5")
+  })
+  
+  observeEvent({input$toTab6_1+input$toTab6_2}, {
+    updateTabsetPanel(session, "inTabset",
+                      selected = "tab6")
+  })
+  
+  observeEvent({input$toTab7_0+input$toTab7_1+input$toTab7_2+input$toTab7_3+input$toTab7_4+input$toTab7_5+input$toTab7_6+input$toTab7_7},{
+    updateTabsetPanel(session, "inTabset", 
+                      selected = "tab7")
+  })
+  
+  output$Consequences <- renderImage({
+    outfile <- tempfile(fileext = '.png')
+    png(outfile, width = 1000, height = 700)
+  })
+  
+  output$Addiction <- renderImage({
+    outfile <- tempfile(fileext = '.png')
+    png(outfile, width = 1000, height = 700)
+  })
+  
+}   
