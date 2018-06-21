@@ -113,7 +113,7 @@ particlesJS("particles-js", {
   
   document.addEventListener('DOMContentLoaded',function(event){
     // array with texts to type in typewriter
-    var dataText = [ "Hi, I'm Ray"];
+    var dataText = [ "Welcome to my website!"];
     
     // type one text in the typwriter
     // keeps calling itself until the text is finished
