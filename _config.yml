@@ -1,7 +1,3 @@
-# Site settings
-url: https://raymondnzaba.com
-enforce_ssl: raymondnzaba.com
-
 title: Raymond
 description: My personal portfolio.
 # baseurl: "/particle" # the subpath of your site, e.g. /blog
