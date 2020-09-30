@@ -68,8 +68,7 @@ audio:not([controls]){
     height:0
 }
 img{
-    border-style:none
-    background-image: url('img2.jpg');
+    border-style:none;
 }
 svg:not(:root){
     overflow:hidden
