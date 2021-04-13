@@ -1,20 +1,23 @@
-title: Raymond
-description: My personal portfolio.
-# baseurl: "/particle" # the subpath of your site, e.g. /blog
-url: https://raymondnzaba.com # the base hostname & protocol for the site
-enforce_ssl: raymondnzaba.com
+# Dependencies
+markdown:         kramdown
+highlighter:      rouge
 
-# User settings
-username: Raymond Nzaba
-user_description: Hi! I am a recent Amherst College graduate seeking full time Data Analyst, Consulting or Software Development opportunities. I am interested in utilizing my wide range of skills within a team setting to create value and drive impact. Check out my resume <a href="" target="_blank">here</a> to learn more about my work experience. Also, shoot me an <a aria-label="Send email" href="mailto:raynzaba@gmail.com">email</a> if you wanna chat/ hit me up on the <a href="https://www.linkedin.com/in/raymond-nzaba/" target="_blank">socials</a> if you wanna connect! 
-user_title: Raymond N Saitoti.
-email: rsaitoti20@amherst.edu
-twitter_username: https://twitter.com/raynzaba
-github_username:  https://github.com/Nzaba
-gplus_username:  https://plus.google.com/u/0/+raymondnzaba
+# Setup
+title:            nsgrantham
+tagline:          Neal Grantham
+description:      Neal Grantham
+permalink:        /:title/
 
-# Google-analytics
-google-analytics:
-  id: ""
+paginate:         5
 
-exclude: ['package.json', 'src' , 'node_modules']
+plugins:
+  - jekyll-feed
+  - jekyll-gist
+  - jekyll-paginate
+
+sidebar_home_link:  false
+
+disqus:
+  shortname:      'nsgrantham-blog'
+
+google_analytics: UA-53171020-1
