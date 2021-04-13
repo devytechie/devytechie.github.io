@@ -1,0 +1,6 @@
+CNAME: raymondnzaba.com
+index.html: <link rel="canonical" href="https://raymondnzaba.com"/>
+_config.yml(first line): 
+# Site settings
+url: https://raymondnzaba.com
+enforce_ssl: raymondnzaba.com
